@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>文章サポートツール</title>
+<style>
+  body {
+    font-family: sans-serif;
+    padding: 20px;
+    max-width: 700px;
+    margin: auto;
+    line-height: 1.6;
+  }
+  textarea {
+    width: 100%;
+    height: 220px;
+    font-size: 16px;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  .result {
+    margin-top: 15px;
+    font-size: 16px;
+  }
+  .result p {
+    margin: 5px 0;
+  }
+  .errors {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  /* 状態表示 */
+  .ok {
+    background: #f0fff4;
+    border: 1px solid #8fd19e;
+  }
+  .ng {
+    background: #fff5f5;
+    border: 1px solid #f0c0c0;
+  }
+
+  .errors li {
+    margin-left: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h2>文章サポートツール</h2>
+
+<textarea id="text" placeholder="ここに文章を入力してください"></textarea>
+
+<div class="result">
+  <p>総文字数：<span id="total">0</span></p>
+  <p>記号除外文字数：<span id="clean">0</span></p>
+</div>
+
+<div id="errorBox" class="errors">
+  <strong>文法・表現チェック：</strong>
+  <ul id="errors"></ul>
+</div>
+
+<script>
+const textarea = document.getElementById("text");
+const errorBox = document.getElementById("errorBox");
+
+function checkJapanese(text) {
+  const errors = [];
+
+  // ① 句読点の重複
+  if (/、{2,}/.test(text)) {
+    errors.push("読点「、」が連続しています → 1つにしましょう");
+  }
+  if (/。{2,}/.test(text)) {
+    errors.push("句点「。」が連続しています → 1つにしましょう");
+  }
+
+  // ② 同じ語尾の繰り返し
+  if (/です。.*です。/.test(text)) {
+    errors.push("「です。」が続いています → 表現を変えると読みやすくなります");
+  }
+  if (/ます。.*ます。/.test(text)) {
+    errors.push("「ます。」が続いています → 言い換えを考えてみましょう");
+  }
+
+  // ③ 助詞の簡易ミス
+  if (/はは/.test(text)) {
+    errors.push("助詞「は」が重複している可能性があります");
+  }
+  if (/がが/.test(text)) {
+    errors.push("助詞「が」が重複している可能性があります");
+  }
+
+  // ④ スペースの不自然さ
+  if (/　{2,}/.test(text)) {
+    errors.push("全角スペースが連続しています");
+  }
+  if (/ {2,}/.test(text)) {
+    errors.push("半角スペースが連続しています");
+  }
+
+  return errors;
+}
+
+textarea.addEventListener("input", () => {
+  const text = textarea.value;
+
+  // ① 総文字数
+  const total = text.length;
+
+  // ② 記号除外文字数
+  const cleaned = text.replace(/[「」『』（）［］｛｝〈〉《》【】〔〕…ー〜,，.．、。!?！？・]/g, "");
+
+  document.getElementById("total").textContent = total;
+  document.getElementById("clean").textContent = cleaned.length;
+
+  // ③ 文法チェック
+  const errorList = checkJapanese(text);
+  const ul = document.getElementById("errors");
+  ul.innerHTML = "";
+
+  if (errorList.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "大きな問題は見つかりませんでした";
+    ul.appendChild(li);
+
+    // OK状態
+    errorBox.classList.remove("ng");
+    errorBox.classList.add("ok");
+
+  } else {
+    errorList.forEach(err => {
+      const li = document.createElement("li");
+      li.textContent = err;
+      ul.appendChild(li);
+    });
+
+    // NG状態
+    errorBox.classList.remove("ok");
+    errorBox.classList.add("ng");
+  }
+});
+</script>
+
+</body>
+</html>
