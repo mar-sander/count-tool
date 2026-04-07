@@ -2,8 +2,10 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>文字数カウントツールver.MM</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
   body {
     font-family: sans-serif;
     padding: 20px;
@@ -12,6 +14,17 @@
     line-height: 1.6;
     background-color: #e1dfdb;
   }
+
+  h2 {
+    font-weight: 600;
+    font-size: 36px;
+    letter-spacing: -0.04em;
+  }
+
+    h2 .subtitle {
+    font-size: 0.5em;
+  }
+  
   textarea {
     width: 100%;
     height: 220px;
@@ -53,11 +66,30 @@
   font-weight: bold;
   }
   
+    /* ===== スマホ最適化 ===== */
+  @media (max-width: 600px) {
+
+    body {
+      padding: 15px;
+      font-size: 16px;
+    }
+
+    h2 {
+
+    }
+
+    #days {
+
+    }
+
+    button {
+    }
+  }
 </style>
 </head>
 <body>
 
-<h2>WORD COUNTER - VER.MM</h2>
+<h2>WORD COUNTER<span class="subtitle"> - VER. MM</span></h2>
 
 <textarea id="text" placeholder="ここに文章を入力してください"></textarea>
 
